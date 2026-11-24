@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meer Restaurant | Fresh Food, Royal Taste</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-circle">M</span>
+      <div>
+        <h1>Meer Restaurant</h1>
+        <small>میر ریسٹورنٹ</small>
+      </div>
+    </div>
+    <nav>
+      <a href="#hero">Home</a>
+      <a href="#menu">Menu</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#menu" class="btn-gold small">Order Now</a>
+  </header>
+
+  <!-- Hero -->
+  <section id="hero" class="hero">
+    <div class="hero-text">
+      <h2>Fresh Food, Royal Taste.</h2>
+      <p>Pakistani khana, chai, burgers, shawarma aur biryani, sab kuch affordable prices par.</p>
+      <div class="hero-buttons">
+        <a href="#menu" class="btn-gold">Explore Menu</a>
+        <a href="https://wa.me/923000000000" target="_blank" class="btn-outline">WhatsApp par Order</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu -->
+  <section id="menu" class="section">
+    <h2 class="section-title">Hamara Menu</h2>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Sab</button>
+      <button class="filter-btn" data-filter="tea">Chai</button>
+      <button class="filter-btn" data-filter="burger">Burgers</button>
+      <button class="filter-btn" data-filter="shawarma">Shawarma</button>
+      <button class="filter-btn" data-filter="biryani">Biryani</button>
+      <button class="filter-btn" data-filter="drinks">Drinks</button>
+    </div>
+
+    <div class="menu-grid" id="menu-grid">
+      <!-- Items script.js se banenge -->
+    </div>
+  </section>
+
+  <!-- Cart -->
+  <section id="cart" class="section cart-section">
+    <h2 class="section-title">Aap ka Order</h2>
+    <div id="cart-items" class="cart-items">Cart khali hai.</div>
+    <h3 class="cart-total">Total: <span id="cart-total">Rs. 0</span></h3>
+
+    <form id="order-form" class="order-form">
+      <input type="text" id="name" placeholder="Aap ka naam" required>
+      <input type="tel" id="phone" placeholder="Mobile number" required>
+      <input type="text" id="address" placeholder="Address (delivery ke liye)">
+      <select id="order-type">
+        <option value="Pickup">Self Pickup</option>
+        <option value="Delivery">Home Delivery</option>
+        <option value="Dine-in">Dine-in</option>
+      </select>
+      <button type="submit" class="btn-gold">Order Confirm Karein</button>
+      <p id="order-message" class="order-message"></p>
+    </form>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="section about">
+    <h2 class="section-title">Hamare Bare Mein</h2>
+    <p>Meer Restaurant mein hum fresh ingredients, saaf suthri preparation aur dostana service ke saath khana pesh karte hain.</p>
+    <div class="features">
+      <div class="feature">Fresh Ingredients</div>
+      <div class="feature">Affordable Prices</div>
+      <div class="feature">Fast Service</div>
+      <div class="feature">Hygienic Preparation</div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <footer id="contact" class="footer">
+    <h2>Contact Us</h2>
+    <p>📞 0300-0000000</p>
+    <p>📍 Faisalabad, Punjab, Pakistan</p>
+    <p>🕒 Roz: 11:00 AM - 11:00 PM</p>
+    <p>&copy; 2026 Meer Restaurant. Sab haqooq mehfooz hain.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

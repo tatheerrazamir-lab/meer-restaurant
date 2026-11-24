@@ -1,0 +1,151 @@
+// Menu items (prices Rs. mein)
+const menuItems = [
+  { id: 1, name: "Regular Tea", category: "tea", price: 60, emoji: "🍵", desc: "Pakistani chai" },
+  { id: 2, name: "Special Doodh Patti", category: "tea", price: 100, emoji: "🥛", desc: "Khas doodh patti" },
+  { id: 3, name: "Chicken Burger", category: "burger", price: 200, emoji: "🍔", desc: "Crispy chicken burger" },
+  { id: 4, name: "Zinger Burger", category: "burger", price: 350, emoji: "🍔", desc: "Spicy zinger burger" },
+  { id: 5, name: "Chicken Shawarma", category: "shawarma", price: 180, emoji: "🌯", desc: "Garlic sauce ke saath" },
+  { id: 6, name: "Special Shawarma", category: "shawarma", price: 250, emoji: "🌯", desc: "Double chicken shawarma" },
+  { id: 7, name: "Chicken Biryani (Half)", category: "biryani", price: 150, emoji: "🍛", desc: "Half plate" },
+  { id: 8, name: "Chicken Biryani (Full)", category: "biryani", price: 250, emoji: "🍛", desc: "Full plate" },
+  { id: 9, name: "Cold Drink 250ml", category: "drinks", price: 60, emoji: "🥤", desc: "Thandi bottle" },
+  { id: 10, name: "Cold Drink 500ml", category: "drinks", price: 100, emoji: "🥤", desc: "Thandi bottle" },
+  { id: 11, name: "Mineral Water", category: "drinks", price: 60, emoji: "💧", desc: "Mineral water" },
+  { id: 12, name: "French Fries", category: "burger", price: 150, emoji: "🍟", desc: "Crispy fries" }
+];
+
+let cart = JSON.parse(localStorage.getItem("meerCart")) || [];
+
+const menuGrid = document.getElementById("menu-grid");
+const cartItemsDiv = document.getElementById("cart-items");
+const cartTotalSpan = document.getElementById("cart-total");
+
+// Menu dikhana
+function showMenu(filter = "all") {
+  menuGrid.innerHTML = "";
+  const items = filter === "all"
+    ? menuItems
+    : menuItems.filter(item => item.category === filter);
+
+  items.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "menu-card";
+    card.innerHTML = `
+      <div class="emoji">${item.emoji}</div>
+      <h3>${item.name}</h3>
+      <p>${item.desc}</p>
+      <div class="price">Rs. ${item.price}</div>
+      <button onclick="addToCart(${item.id})">Add to Cart</button>
+    `;
+    menuGrid.appendChild(card);
+  });
+}
+
+// Filter buttons
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    showMenu(btn.dataset.filter);
+  });
+});
+
+// Cart mein item add karna
+function addToCart(id) {
+  const item = menuItems.find(i => i.id === id);
+  const existing = cart.find(c => c.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
+  }
+  saveAndRender();
+}
+
+// Quantity change ya remove
+function changeQty(id, change) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty += change;
+  if (item.qty <= 0) {
+    cart = cart.filter(c => c.id !== id);
+  }
+  saveAndRender();
+}
+
+function saveAndRender() {
+  localStorage.setItem("meerCart", JSON.stringify(cart));
+  renderCart();
+}
+
+// Cart dikhana
+function renderCart() {
+  if (cart.length === 0) {
+    cartItemsDiv.innerHTML = "Cart khali hai.";
+    cartTotalSpan.textContent = "Rs. 0";
+    return;
+  }
+
+  cartItemsDiv.innerHTML = "";
+  let total = 0;
+
+  cart.forEach(item => {
+    total += item.price * item.qty;
+    const row = document.createElement("div");
+    row.className = "cart-row";
+    row.innerHTML = `
+      <span>${item.name} x ${item.qty}</span>
+      <span>
+        Rs. ${item.price * item.qty}
+        <button onclick="changeQty(${item.id}, 1)">+</button>
+        <button onclick="changeQty(${item.id}, -1)">-</button>
+      </span>
+    `;
+    cartItemsDiv.appendChild(row);
+  });
+
+  cartTotalSpan.textContent = `Rs. ${total}`;
+}
+
+// Order submit karna (order.php ko bhejta hai)
+document.getElementById("order-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = document.getElementById("order-message");
+
+  if (cart.length === 0) {
+    message.textContent = "Pehle cart mein kuch items add karein.";
+    return;
+  }
+
+  const orderData = {
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    address: document.getElementById("address").value,
+    type: document.getElementById("order-type").value,
+    items: cart
+  };
+
+  try {
+    const response = await fetch("order.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orderData)
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      message.textContent = `Shukriya! Aap ka order number ${result.orderNo} hai.`;
+      cart = [];
+      saveAndRender();
+      e.target.reset();
+    } else {
+      message.textContent = "Order save nahi ho saka. Dobara koshish karein.";
+    }
+  } catch (error) {
+    message.textContent = "Server se rabta nahi ho saka. PHP server chal raha hai?";
+  }
+});
+
+// Shuru mein
+showMenu();
+renderCart();

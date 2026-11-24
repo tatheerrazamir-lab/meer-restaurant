@@ -1,0 +1,42 @@
+<?php
+header("Content-Type: application/json");
+
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!$data || empty($data["items"]) || empty($data["name"]) || empty($data["phone"])) {
+    echo json_encode(["success" => false, "message" => "Invalid data"]);
+    exit;
+}
+
+// Total server par dobara calculate karein (client ki price par bharosa nahi)
+$prices = [
+    1 => 60, 2 => 100, 3 => 200, 4 => 350, 5 => 180, 6 => 250,
+    7 => 150, 8 => 250, 9 => 60, 10 => 100, 11 => 60, 12 => 150
+];
+
+$total = 0;
+$lines = [];
+foreach ($data["items"] as $item) {
+    $id = (int)$item["id"];
+    $qty = max(1, (int)$item["qty"]);
+    if (!isset($prices[$id])) continue;
+    $total += $prices[$id] * $qty;
+    $lines[] = $item["name"] . " x " . $qty;
+}
+
+$orderNo = "MR-" . date("YmdHis") . "-" . rand(100, 999);
+
+$record = implode(" | ", [
+    $orderNo,
+    date("d-m-Y h:i A"),
+    htmlspecialchars(strip_tags($data["name"])),
+    htmlspecialchars(strip_tags($data["phone"])),
+    htmlspecialchars(strip_tags($data["type"] ?? "")),
+    htmlspecialchars(strip_tags($data["address"] ?? "")),
+    implode(", ", $lines),
+    "Total: Rs. " . $total
+]) . PHP_EOL;
+
+file_put_contents("orders.txt", $record, FILE_APPEND | LOCK_EX);
+
+echo json_encode(["success" => true, "orderNo" => $orderNo, "total" => $total]);
